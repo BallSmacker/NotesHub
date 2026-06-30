@@ -1,44 +1,51 @@
 # 📚 NotesHub
 
-NotesHub is a full-stack notes sharing platform built for college students.
+A mobile-first notes sharing platform built for college students.
 
-It allows an admin to upload and manage PDF notes while students can preview or download them directly from the website.
+Students can preview or download subject notes directly from the website, while the admin can manage subjects and upload, replace, or delete PDFs through a secure dashboard.
 
 ---
 
 ## ✨ Features
 
-### Student
+### Students
 - View all subjects
-- View Module 1 & Module 2 notes
+- View Module 1, Module 2 and Practical PDFs
 - Preview PDFs in the browser
 - Download PDFs
+- Mobile-friendly interface
+- No login required
 
 ### Admin
+- Secure JWT authentication
 - Add, edit and delete subjects
-- Upload PDF notes
+- Upload PDFs
 - Replace existing PDFs
 - Delete PDFs
+- Automatic file management
 
 ---
 
 ## 🛠 Tech Stack
 
-### Backend
-- Node.js
-- Express.js
-- PostgreSQL
-- Multer
-- JWT Authentication (Coming Soon)
-
-### Storage
-- Local Uploads (Current)
-- Cloudflare R2 (Planned)
-
-### Frontend (Planned)
+### Frontend
 - React
 - React Router
 - Axios
+
+### Backend
+- Node.js
+- Express.js
+- Multer
+- JWT Authentication
+- bcryptjs
+
+### Database
+- PostgreSQL
+
+### Storage
+- Local Uploads (Development)
+- Cloudflare R2 (Production)
 
 ---
 
@@ -55,9 +62,32 @@ NotesHub/
 │   ├── uploads/
 │   ├── .env
 │   ├── index.js
-│   └── package.json
+│   ├── package.json
+│   └── package-lock.json
 │
-└── README.md
+└── client/ (React - Coming Soon)
+```
+
+---
+
+## ⚙ Environment Variables
+
+Create a `.env` file inside the `server` folder.
+
+```env
+PORT=3000
+
+DB_HOST=
+DB_PORT=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+
+ADMIN_USERNAME=
+
+ADMIN_PASSWORD_HASH=
+
+JWT_SECRET=
 ```
 
 ---
@@ -70,7 +100,7 @@ Clone the repository
 git clone <repository-url>
 ```
 
-Go to the server folder
+Go into the server folder
 
 ```bash
 cd server
@@ -82,17 +112,6 @@ Install dependencies
 npm install
 ```
 
-Create a `.env` file
-
-```env
-PORT=3000
-DB_USER=your_username
-DB_HOST=localhost
-DB_NAME=noteshub
-DB_PASSWORD=your_password
-DB_PORT=5432
-```
-
 Start the server
 
 ```bash
@@ -101,7 +120,15 @@ npm run dev
 
 ---
 
-## 📡 API Endpoints
+## 📌 API Endpoints
+
+### Authentication
+
+| Method | Endpoint |
+|---------|----------|
+| POST | /auth/login |
+
+---
 
 ### Subjects
 
@@ -112,6 +139,8 @@ npm run dev
 | POST | /subjects |
 | PUT | /subjects/:id |
 | DELETE | /subjects/:id |
+
+---
 
 ### PDFs
 
@@ -125,29 +154,45 @@ npm run dev
 
 ---
 
-## 📌 Current Status
+## 🔐 Authentication
 
-- ✅ Subjects CRUD
-- ✅ PDF Upload
-- ✅ PDF Preview
-- ✅ PDF Delete
-- ✅ PDF Replace
-- ✅ PostgreSQL Integration
-- ⏳ JWT Authentication
-- ⏳ Cloudflare R2 Integration
-- ⏳ React Frontend
-- ⏳ Deployment
+Students do not need an account.
 
----
+Only the administrator can:
 
-## 👨‍💻 Team
+- Upload PDFs
+- Replace PDFs
+- Delete PDFs
+- Manage subjects
 
-Backend: **Somil Patel**
-
-Frontend: **Somil Patel**
+Protected routes require a JWT token.
 
 ---
 
-## 📄 License
+## 📱 Project Goal
 
-This project is for educational purposes.
+NotesHub is designed to provide a simple and efficient platform where college students can access study materials from any device without needing to download large files unnecessarily.
+
+The project follows a mobile-first approach with a clean dark-themed interface.
+
+---
+
+## 🚧 Future Improvements
+
+- Cloudflare R2 integration
+- React frontend
+- Admin dashboard
+- Search subjects
+- Latest updates section
+- PDF analytics
+- Semester management
+- Deploy to production
+
+---
+
+## 👨‍💻 Developers
+
+Backend: Somil Patel
+
+Frontend: Somil Patel
+Project Name: NotesHub
