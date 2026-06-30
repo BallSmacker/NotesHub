@@ -1,8 +1,8 @@
 const express = require("express");
-
 const router = express.Router();
 
 const upload = require("../middleware/upload");
+const authenticateToken = require("../middleware/auth");
 
 const {
   uploadPdf,
@@ -12,16 +12,15 @@ const {
   replacePdf,
 } = require("../controllers/pdfController");
 
-router.post("/", upload.single("pdf"), uploadPdf);
+// Public routes
 router.get("/", getAllPdfs);
 router.get("/subject/:subjectId", getPdfsBySubject);
+
+// Protected routes
+router.use(authenticateToken);
+
+router.post("/", upload.single("pdf"), uploadPdf);
 router.put("/:id", upload.single("pdf"), replacePdf);
-router.delete(
-  "/:id",
-  (req, res, next) => {
-    console.log("DELETE route hit");
-    next();
-  },
-  deletePdf,
-);
+router.delete("/:id", deletePdf);
+
 module.exports = router;

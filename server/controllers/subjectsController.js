@@ -18,6 +18,18 @@ const addSubject = async (req, res) => {
   try {
     const { subject_name, display_order } = req.body;
 
+    if (!subject_name || subject_name.trim() === "") {
+      return res.status(400).json({
+        message: "Subject name is required",
+      });
+    }
+
+    if (!Number.isInteger(display_order) || display_order < 1) {
+      return res.status(400).json({
+        message: "Display order must be a positive number",
+      });
+    }
+
     const result = await pool.query(
       `INSERT INTO subjects (subject_name, display_order)
       VALUES ($1, $2)

@@ -7,12 +7,38 @@ const uploadPdf = async (req, res) => {
   try {
     const { subject_id, type, module } = req.body;
 
+    if (!subject_id) {
+      return res.status(400).json({
+        message: "Subject is required",
+      });
+    }
+
+    if (!["Notes", "Practical"].includes(type)) {
+      return res.status(400).json({
+        message: "Type must be either Notes or Practicals",
+      });
+    }
+
+    if (![1, 2, 3].includes(Number(module))) {
+      return res.status(400).json({
+        message: "Module must be 1, 2, or 3",
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({
         message: "Please upload a PDF",
       });
     }
+    const subject = await pool.query("SELECT id FROM subjects WHERE id = $1", [
+      subject_id,
+    ]);
 
+    if (subject.rows.length === 0) {
+      return res.status(400).json({
+        message: "Subject not found",
+      });
+    }
     const filename = req.file.originalname;
     const file_url = `/uploads/${req.file.filename}`;
 
@@ -98,8 +124,6 @@ const deletePdf = async (req, res) => {
       });
     }
 
-    console.log("Database URL:", pdf.rows[0].file_url);
-
     const filePath = path.join(
       __dirname,
       "..",
@@ -107,16 +131,10 @@ const deletePdf = async (req, res) => {
       path.basename(pdf.rows[0].file_url),
     );
 
-    console.log("File path:", filePath);
-    console.log("Exists:", fs.existsSync(filePath));
-
     // Delete file
     try {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log("✅ File deleted successfully");
-      } else {
-        console.log("⚠ File does not exist");
       }
     } catch (err) {
       console.error("❌ Error deleting file:", err);
@@ -124,8 +142,6 @@ const deletePdf = async (req, res) => {
 
     // Delete database record
     await pool.query("DELETE FROM pdfs WHERE id = $1", [id]);
-
-    console.log("✅ Database record deleted");
 
     res.json({
       message: "PDF deleted successfully",
