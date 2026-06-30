@@ -1,6 +1,6 @@
+const supabase = require("../config/supabase");
+const crypto = require("crypto");
 const pool = require("../database/db");
-const fs = require("fs");
-const path = require("path");
 
 // Upload PDF
 const uploadPdf = async (req, res) => {
@@ -15,7 +15,7 @@ const uploadPdf = async (req, res) => {
 
     if (!["Notes", "Practical"].includes(type)) {
       return res.status(400).json({
-        message: "Type must be either Notes or Practicals",
+        message: "Type must be either Notes or Practical",
       });
     }
 
@@ -35,19 +35,53 @@ const uploadPdf = async (req, res) => {
     ]);
 
     if (subject.rows.length === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: "Subject not found",
       });
     }
+    const existing = await pool.query(
+      `SELECT id
+   FROM pdfs
+   WHERE subject_id = $1
+   AND type = $2
+   AND module = $3`,
+      [subject_id, type, module],
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(409).json({
+        message:
+          "A PDF already exists for this subject, type and module. Use Replace instead.",
+      });
+    }
+    const uniqueName =
+      crypto.randomUUID() + "-" + req.file.originalname.replace(/\s+/g, "_");
+
+    const { error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .upload(uniqueName, req.file.buffer, {
+        contentType: "application/pdf",
+        upsert: false,
+      });
+
+    if (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+    const { data } = supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .getPublicUrl(uniqueName);
+
     const filename = req.file.originalname;
-    const file_url = `/uploads/${req.file.filename}`;
+    const file_url = data.publicUrl;
 
     const result = await pool.query(
       `INSERT INTO pdfs
-      (subject_id, type, module, filename, file_url)
-      VALUES ($1, $2, $3, $4, $5)
+      (subject_id, type, module, filename, file_url, storage_filename)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
-      [subject_id, type, module, filename, file_url],
+      [subject_id, type, module, filename, file_url, uniqueName],
     );
 
     res.status(201).json(result.rows[0]);
@@ -110,12 +144,10 @@ const getPdfsBySubject = async (req, res) => {
   }
 };
 
-// Delete PDF
 const deletePdf = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find PDF in database
     const pdf = await pool.query("SELECT * FROM pdfs WHERE id = $1", [id]);
 
     if (pdf.rows.length === 0) {
@@ -124,23 +156,16 @@ const deletePdf = async (req, res) => {
       });
     }
 
-    const filePath = path.join(
-      __dirname,
-      "..",
-      "uploads",
-      path.basename(pdf.rows[0].file_url),
-    );
+    const { error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .remove([pdf.rows[0].storage_filename]);
 
-    // Delete file
-    try {
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    } catch (err) {
-      console.error("❌ Error deleting file:", err);
+    if (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
     }
 
-    // Delete database record
     await pool.query("DELETE FROM pdfs WHERE id = $1", [id]);
 
     res.json({
@@ -165,6 +190,7 @@ const replacePdf = async (req, res) => {
       });
     }
 
+    // Find existing PDF
     const pdf = await pool.query("SELECT * FROM pdfs WHERE id = $1", [id]);
 
     if (pdf.rows.length === 0) {
@@ -173,31 +199,59 @@ const replacePdf = async (req, res) => {
       });
     }
 
-    const oldFilePath = path.join(
-      __dirname,
-      "..",
-      "uploads",
-      path.basename(pdf.rows[0].file_url),
-    );
+    // Delete old file from Supabase
+    const { error: deleteError } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .remove([pdf.rows[0].storage_filename]);
 
-    if (fs.existsSync(oldFilePath)) {
-      fs.unlinkSync(oldFilePath);
+    if (deleteError) {
+      return res.status(500).json({
+        message: deleteError.message,
+      });
     }
 
-    const filename = req.file.originalname;
-    const file_url = `/uploads/${req.file.filename}`;
+    // Generate unique filename
+    const uniqueName =
+      crypto.randomUUID() + "-" + req.file.originalname.replace(/\s+/g, "_");
 
+    // Upload new file
+    const { error: uploadError } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .upload(uniqueName, req.file.buffer, {
+        contentType: "application/pdf",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      return res.status(500).json({
+        message: uploadError.message,
+      });
+    }
+
+    // Get public URL
+    const { data } = supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .getPublicUrl(uniqueName);
+
+    const filename = req.file.originalname;
+    const file_url = data.publicUrl;
+
+    // Update database
     const result = await pool.query(
       `UPDATE pdfs
-      SET filename = $1, file_url = $2, uploaded_at = CURRENT_TIMESTAMP
-      WHERE id = $3
-      RETURNING *`,
-      [filename, file_url, id],
+       SET filename = $1,
+           file_url = $2,
+           storage_filename = $3,
+           uploaded_at = CURRENT_TIMESTAMP
+       WHERE id = $4
+       RETURNING *`,
+      [filename, file_url, uniqueName, id],
     );
 
     res.json(result.rows[0]);
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       message: "Server Error",
     });
