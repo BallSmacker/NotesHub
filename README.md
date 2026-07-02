@@ -1,151 +1,193 @@
 # 📚 NotesHub
 
-A mobile-first notes sharing platform built for college students.
+A modern full-stack notes sharing platform built for college students.
 
-Students can preview or download subject notes directly from the website, while the admin can manage subjects and upload, replace, or delete PDFs through a secure dashboard.
+NotesHub allows students to browse subjects, preview notes directly in the browser, and download study material. Administrators can securely manage subjects and PDFs through a dedicated dashboard.
 
 ---
 
-## ✨ Features
+# ✨ Features
 
-### Students
-- View all subjects
-- View Module 1, Module 2 and Practical PDFs
-- Preview PDFs in the browser
+## 👨‍🎓 Student
+
+- Browse subjects
+- Search subjects
+- View Notes and Practical PDFs
+- In-browser PDF preview
 - Download PDFs
-- Mobile-friendly interface
+- Responsive mobile-first interface
 - No login required
 
-### Admin
+---
+
+## 👨‍💼 Admin
+
 - Secure JWT authentication
+- Dashboard with statistics
 - Add, edit and delete subjects
 - Upload PDFs
-- Replace existing PDFs
+- Preview PDFs
 - Delete PDFs
-- Automatic file management
+- Automatic cloud file management
 
 ---
 
-## 🛠 Tech Stack
+# 🛠 Tech Stack
 
-### Frontend
+## Frontend
+
 - React
+- Vite
 - React Router
 - Axios
+- Tailwind CSS
+- Lucide React
+- React PDF
 
-### Backend
+## Backend
+
 - Node.js
 - Express.js
 - Multer
 - JWT Authentication
 - bcryptjs
 
-### Database
+## Database
+
 - PostgreSQL
 
-### Storage
-- Local Uploads (Development)
-- Cloudflare R2 (Production)
+## Storage
+
+- Supabase Storage
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```
-NotesHub/
+NotesHub
 │
-├── server/
-│   ├── controllers/
-│   ├── database/
-│   ├── middleware/
-│   ├── routes/
-│   ├── uploads/
-│   ├── .env
-│   ├── index.js
+├── client
+│   ├── public
+│   ├── src
+│   │   ├── components
+│   │   ├── pages
+│   │   ├── services
+│   │   ├── assets
+│   │   └── App.jsx
 │   ├── package.json
-│   └── package-lock.json
+│   └── vite.config.js
 │
-└── client/ (React - Coming Soon)
+├── server
+│   ├── config
+│   ├── controllers
+│   ├── database
+│   ├── middleware
+│   ├── routes
+│   ├── package.json
+│   └── index.js
+│
+└── README.md
 ```
 
 ---
 
-## ⚙ Environment Variables
+# ⚙ Environment Variables
 
-Create a `.env` file inside the `server` folder.
+## Server (.env)
 
 ```env
-PORT=3000
+PORT=
 
-DB_HOST=
-DB_PORT=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
-
-ADMIN_USERNAME=
-
-ADMIN_PASSWORD_HASH=
+DATABASE_URL=
 
 JWT_SECRET=
+
+ADMIN_USERNAME=
+ADMIN_PASSWORD_HASH=
+
+SUPABASE_URL=
+SUPABASE_KEY=
+SUPABASE_BUCKET=
+```
+
+## Client (.env)
+
+```env
+VITE_API_URL=
 ```
 
 ---
 
-## 🚀 Installation
+# 🚀 Installation
 
 Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/YOUR_USERNAME/NotesHub.git
 ```
 
-Go into the server folder
+Go into the project
+
+```bash
+cd NotesHub
+```
+
+## Backend
 
 ```bash
 cd server
-```
-
-Install dependencies
-
-```bash
 npm install
+npm run dev
 ```
 
-Start the server
+## Frontend
 
 ```bash
+cd client
+npm install
 npm run dev
+```
+
+Frontend:
+
+```
+http://localhost:5173
+```
+
+Backend:
+
+```
+http://localhost:3000
 ```
 
 ---
 
-## 📌 API Endpoints
+# 📌 API Endpoints
 
-### Authentication
+## Authentication
 
 | Method | Endpoint |
-|---------|----------|
+|----------|----------------|
 | POST | /auth/login |
 
 ---
 
-### Subjects
+## Subjects
 
 | Method | Endpoint |
-|---------|----------|
+|----------|--------------------------|
 | GET | /subjects |
-| GET | /subjects/:id |
 | POST | /subjects |
 | PUT | /subjects/:id |
 | DELETE | /subjects/:id |
 
 ---
 
-### PDFs
+## PDFs
 
 | Method | Endpoint |
-|---------|----------|
+|----------|-----------------------------|
 | GET | /pdfs |
 | GET | /pdfs/subject/:subjectId |
 | POST | /pdfs |
@@ -154,45 +196,70 @@ npm run dev
 
 ---
 
-## 🔐 Authentication
+# 🔐 Authentication
 
-Students do not need an account.
+Students do not require an account.
 
-Only the administrator can:
+Only administrators can:
 
 - Upload PDFs
-- Replace PDFs
 - Delete PDFs
 - Manage subjects
 
-Protected routes require a JWT token.
+Protected routes use JWT authentication.
 
 ---
 
-## 📱 Project Goal
+# 📱 Screenshots
 
-NotesHub is designed to provide a simple and efficient platform where college students can access study materials from any device without needing to download large files unnecessarily.
+Add screenshots after deployment.
 
-The project follows a mobile-first approach with a clean dark-themed interface.
-
----
-
-## 🚧 Future Improvements
-
-- Cloudflare R2 integration
-- React frontend
-- Admin dashboard
-- Search subjects
-- Latest updates section
-- PDF analytics
-- Semester management
-- Deploy to production
+- Home Page
+- Semester Page
+- Subject Page
+- PDF Preview
+- Admin Dashboard
+- Upload PDF
+- Manage Subjects
+- Manage PDFs
 
 ---
 
-## 👨‍💻 Developers
+# 🚀 Deployment
 
-Backend: Somil Patel
+Frontend
 
-Frontend: Somil Patel
-Project Name: NotesHub
+- Vercel
+
+Backend
+
+- Railway / Render
+
+Database
+
+- PostgreSQL
+
+Storage
+
+- Supabase Storage
+
+---
+
+# 📈 Future Improvements
+
+- Replace PDFs from the dashboard
+- Multiple semesters
+- Drag-and-drop uploads
+- PDF thumbnails
+- Usage analytics
+- Favorites / bookmarks
+- Bulk uploads
+- Role-based authentication
+
+---
+
+# 👨‍💻 Developer
+
+**Somil Patel**
+
+Built as a full-stack web application using React, Express, PostgreSQL and Supabase Storage.
