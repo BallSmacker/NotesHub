@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
+
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+/* ---------- Theme ---------- */
+
+@theme {
+  --radius: 0.625rem;
+
+  --font-display: "Poppins", sans-serif;
+  --font-sans: "Inter", sans-serif;
+
+  --color-background: oklch(0.16 0.015 155);
+  --color-foreground: oklch(0.97 0.005 155);
+
+  --color-card: oklch(0.2 0.018 155);
+  --color-card-foreground: oklch(0.97 0.005 155);
+
+  --color-primary: oklch(0.75 0.19 145);
+  --color-primary-foreground: oklch(0.14 0.02 155);
+
+  --color-secondary: oklch(0.24 0.02 155);
+  --color-secondary-foreground: oklch(0.97 0.005 155);
+
+  --color-muted: oklch(0.24 0.02 155);
+  --color-muted-foreground: oklch(0.68 0.02 155);
+
+  --color-accent: oklch(0.76 0.17 55);
+  --color-accent-foreground: oklch(0.14 0.02 55);
+
+  --color-destructive: oklch(0.65 0.22 25);
+  --color-destructive-foreground: white;
+
+  --color-border: oklch(1 0 0 / 8%);
+  --color-input: oklch(1 0 0 / 12%);
+  --color-ring: oklch(0.75 0.19 145);
+
+  --color-sidebar: oklch(0.18 0.017 155);
+  --color-sidebar-foreground: oklch(0.95 0.005 155);
+
+  --shadow-soft: 0 10px 40px -12px rgb(0 0 0 / 0.45);
+  --shadow-glow: 0 0 60px -20px rgb(59 255 129 / 0.45);
+
+  --gradient-primary: linear-gradient(
+    135deg,
+    oklch(0.75 0.19 145),
+    oklch(0.68 0.17 155)
+  );
+
+  --gradient-accent: linear-gradient(
+    135deg,
+    oklch(0.76 0.17 55),
+    oklch(0.7 0.19 45)
+  );
+
+  --gradient-hero:
+    radial-gradient(
+      ellipse at top,
+      oklch(0.25 0.08 145 / 0.4),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      oklch(0.25 0.1 55 / 0.25),
+      transparent 60%
+    );
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
+}
+
+/* ---------- Utilities ---------- */
+
+.text-gradient-primary {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.card-elevated {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+}

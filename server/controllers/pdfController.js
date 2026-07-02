@@ -5,6 +5,8 @@ const pool = require("../database/db");
 // Upload PDF
 const uploadPdf = async (req, res) => {
   try {
+    console.log(req.file.originalname);
+    console.log(req.body.name);
     const { subject_id, type, module } = req.body;
 
     if (!subject_id) {
@@ -13,7 +15,7 @@ const uploadPdf = async (req, res) => {
       });
     }
 
-    if (!["Notes", "Practical"].includes(type)) {
+    if (!["Notes", "Practical"].includes(type?.trim())) {
       return res.status(400).json({
         message: "Type must be either Notes or Practical",
       });
@@ -73,7 +75,9 @@ const uploadPdf = async (req, res) => {
       .from(process.env.SUPABASE_BUCKET)
       .getPublicUrl(uniqueName);
 
-    const filename = req.file.originalname;
+    const filename = req.body.name?.trim()
+      ? `${req.body.name.trim()}.pdf`
+      : req.file.originalname;
     const file_url = data.publicUrl;
 
     const result = await pool.query(
@@ -233,7 +237,9 @@ const replacePdf = async (req, res) => {
       .from(process.env.SUPABASE_BUCKET)
       .getPublicUrl(uniqueName);
 
-    const filename = req.file.originalname;
+    const filename = req.body.name?.trim()
+      ? `${req.body.name.trim()}.pdf`
+      : req.file.originalname;
     const file_url = data.publicUrl;
 
     // Update database
