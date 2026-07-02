@@ -7,9 +7,21 @@ const subjectRoutes = require("./routes/subjects");
 const pdfRoutes = require("./routes/pdfs");
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://noteshubfrontend.vercel.app",
+  "https://noteshubfrontend-kdb3lqdb0-ballsmackers-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
