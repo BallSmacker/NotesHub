@@ -56,7 +56,14 @@ function UploadPage() {
       try {
         const res = await api.get("/subjects");
 
-        setSubjects(Array.isArray(res.data) ? res.data : res.data.data || []);
+        const list = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+        setSubjects(list);
+
+        // Set the first subject as the selected value
+        if (list.length > 0) {
+          setSubjectId(String(list[0].id));
+        }
       } catch (err) {
         console.error(err);
       }
